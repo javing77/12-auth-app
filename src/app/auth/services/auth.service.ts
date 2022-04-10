@@ -19,6 +19,12 @@ export class AuthService {
 
   constructor( private http: HttpClient   ) { }
 
+
+  registro( name: string, email: string, password: string) {
+    
+  }
+
+
   login( email: string, password: string ){
 
     const url = `${ this.baseUrl }/auth`;
@@ -50,10 +56,22 @@ export class AuthService {
     return this.http.get<AuthResponse>( url , { headers })
       .pipe(
         map( resp => {
+
+          //TODO: VOLVER ESTO UNA FUNCIÓN.. SE REPITE
+          localStorage.setItem('token', resp.token!);
+          this._usuario = {
+            name: resp.name!,
+            uid: resp.uid!
+          }
+
           return resp.ok
         } ),
         catchError ( err => of(false))
       );
+  }
+
+  logout() {
+    localStorage.clear();
   }
 
 }
