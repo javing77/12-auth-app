@@ -22,6 +22,8 @@ export class DashboardComponent implements OnInit {
               private authService: AuthService) { }
 
   ngOnInit(): void {
+    console.log( this.usuario );
+
   }
 
   logout(){

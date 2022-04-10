@@ -21,7 +21,26 @@ export class AuthService {
 
 
   registro( name: string, email: string, password: string) {
-    
+    const url = `${ this.baseUrl }/auth/new-user`;
+    const body = { name, password, email };
+
+    return this.http.post<AuthResponse>(url, body)
+      .pipe(
+        tap( resp =>  {
+          if( resp.ok)
+          {
+            localStorage.setItem('token', resp.token!);
+            // this._usuario = {
+            //   name:  resp.name!,
+            //   uid:   resp.uid!,
+            //   email: resp.email!
+            // }
+          }
+        }),
+        map( resp => resp.ok ),
+        catchError( err => of(err.error.msg) )
+      )
+
   }
 
 
@@ -35,10 +54,14 @@ export class AuthService {
         tap( resp => {
           if ( resp.ok) {
             localStorage.setItem('token', resp.token!);
-            this._usuario = {
-              name: resp.name!,
-              uid: resp.uid!
-            }
+            console.log('Valor de resp', resp);
+
+            // this._usuario = {
+            //   name:   resp.name!,
+            //   uid:    resp.uid!,
+            //   email  : resp.email! ,
+            // }
+            console.log('Valor de usuario', email);
           }
 
         }),
@@ -54,6 +77,7 @@ export class AuthService {
       .set('x-token', localStorage.getItem('token') || '')
 
     return this.http.get<AuthResponse>( url , { headers })
+      //TODO: Crearun pipe para este parte
       .pipe(
         map( resp => {
 
@@ -61,7 +85,8 @@ export class AuthService {
           localStorage.setItem('token', resp.token!);
           this._usuario = {
             name: resp.name!,
-            uid: resp.uid!
+            uid: resp.uid!,
+            email: resp.email!,
           }
 
           return resp.ok
